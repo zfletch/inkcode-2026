@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arnth's Lament</title>
+    <style>
+        body { margin: 0; background: #a3b18a; overflow: hidden; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; align-items: center; }
+        #game-container { position: relative; width: 800px; height: 600px; background: #f0e3d8; border: 5px solid #9c7a62; overflow: hidden; cursor: pointer; box-shadow: 0
+10px 20px rgba(0, 0, 0, 0.3); margin-left: 100px; background-image: url(./countryside.jpg);
+  background-size: cover; }
+        #score { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); font-size: 4em; color: #6a4b3c; z-index: 10; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+        #player { position: absolute; width: 50px; height: 60px; left: 10%; transform: translateY(0); transition:
+transform 0.1s ease-out; z-index: 5; }
+        #player::before { content: '👻'; position: absolute; font-size: 60px; top:-10px; left:-10px; transform: rotate(-15deg); z-index: 6; }
+
+        .pipe { position: absolute; background: linear-gradient(to bottom, #8d6e63, #a1887f); box-shadow: inset 0 -20px 10px rgba(0, 0, 0, 0.5); z-index: 4; }
+        .pipe-top { width: 60px; left: 100%; /* Initial position */ }
+        .pipe-bottom { width: 60px; left: 100%; }
+
+        #start-screen, #game-over-screen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.6); color: white; display: flex;
+flex-direction: column; justify-content: center; align-items: center; text-align: center; z-index: 20; }
+        #start-screen h1, #game-over-screen h1 { font-size: 3em; color: #b74d4d; margin-bottom: 10px; }
+        #start-button, #restart-button { padding: 15px 30px; font-size: 1.2em; cursor: pointer; background-color: #6a4b3c; color: white; border: none; border-radius: 8px;
+transition: background-color 0.2s; }
+        #start-button:hover, #restart-button:hover { background-color: #9c7a62; }
+
+    </style>
+</head>
+<body>
+<div id="story-panel" style="
+    background: rgba(24, 30, 35, 0.9); /* Dark slate/stone color */
+    color: #e8c5b7; /* Light bone text color */
+    padding: 30px;
+    border: 5px solid #a3b18a; /* Earthy border */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    max-width: 70%;
+    margin: auto;
+    text-align: center;
+">
+    <h2 style="color: #b74d4d; border-bottom: 1px solid rgba(232, 197, 183, 0.5); padding-bottom: 10px;">📜 The Spectral Burden of San Miniato 📜</h2>
+    <p style="font-style: italic; margin-top: 15px;">"I was Arnth son of Larth. My blood flowed through these Tuscan valleys when the altars sang and the city thrived. But
+time, like Rome's relentless legions, swept us away. Now, as a ghost bound to this place, I wander among the ruins—seeking knowledge: how did my great civilization fall? How
+did we lose the light of our world?"</p>
+    <hr style="border-color: rgba(232, 197, 183, 0.5); margin: 25px 0;">
+
+    <div id="game-container">
+        <div id="score">0</div>
+        <div id="player"></div>
+        <div id="start-screen">
+            <h1>Arnth's Lament</h1>
+            <p>The spectral weight of history rests on your soul. Guide Arnth, the ancient Etruscan ghost, through the ruins.</p>
+            <p>Dodge the inevitable advance of Rome!</p>
+            <button id="start-button">Start Journey (Click/Tap)</button>
+        </div>
+        <div id="game-over-screen" style="display: none;">
+            <h1>Lamentation</h1>
+            <p id="final-score">Your score: 0</p>
+            <p>The Etruscan flame flickered out. Reload the page to try again.</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const container = document.getElementById('game-container');
+    const player = document.getElementById('player');
+    const scoreDisplay = document.getElementById('score');
+    const startScreen = document.getElementById('start-screen');
+    const gameOverScreen = document.getElementById('game-over-screen');
+    const finalScoreDisplay = document.getElementById('final-score');
+
+    let gameLoop;
+    let gravity = 0.7;
+    let playerY = 0;
+    let velocity = 0;
+    let score = 0;
+    let isPlaying = false;
+    let pipeTimer = null;
+    const PIPE_INTERVAL = 5300; // ms
+
+    function startGame() {
+        playerY = 0;
+        velocity = 0;
+        score = 0;
+        isPlaying = true;
+        scoreDisplay.textContent = 0;
+
+        // Reset player position and clear pipes
+        player.style.transform = 'translateY(0)';
+        container.querySelectorAll('.pipe').forEach(p => p.remove());
+        startScreen.style.display = 'none';
+        gameOverScreen.style.display = 'none';
+
+        gameLoop = setInterval(() => {
+            if (!isPlaying) return;
+
+            // 1. Apply Gravity and Update Position
+            velocity += gravity;
+            playerY += velocity * 0.8; // Multiply for slightly slower feel
+            player.style.transform = `translateY(${playerY}px)`;
+
+            // Check floor/ceiling collision
+            const maxH = container.clientHeight - player.clientHeight;
+            if (playerY + player.clientHeight > maxH || playerY < 0) {
+                gameOver();
+                return;
+            }
+
+            // 2. Pipe Management
+            let pipes = container.querySelectorAll('.pipe');
+            pipes.forEach(pipe => {
+                let pipeLeft = parseFloat(pipe.style.left);
+                pipeLeft -= 3; // Move left
+                pipe.style.left = `${pipeLeft}px`;
+
+                if (pipeLeft < -60) {
+                    pipe.remove();
+                }
+            });
+            checkCollision(pipes);
+
+        }, 20);
+    }
+
+    function jump() {
+        if (!isPlaying) return;
+        velocity = -10; // Jump strength
+    }
+
+    function createPipes() {
+        // Random height calculation (ensure there's space for player)
+        const minHeight = 40;
+        const maxHeight = 230;
+        const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+        const bottomHeight = Math.random() * (maxHeight - minHeight) + minHeight;
+
+        // Create Top Pipe
+        let pipeTop = document.createElement('div');
+        pipeTop.className = 'pipe pipe-top';
+        pipeTop.style.height = `${topHeight}px`;
+        pipeTop.style.top = '0';
+        container.appendChild(pipeTop);
+
+        // Create Bottom Pipe
+        let pipeBottom = document.createElement('div');
+        pipeBottom.className = 'pipe pipe-bottom';
+        pipeBottom.style.height = `${bottomHeight}px`;
+        pipeBottom.style.top = `${container.clientHeight - bottomHeight}px`;
+        container.appendChild(pipeBottom);
+
+        // Set initial position to the right edge
+        pipeTop.style.left = '800px';
+        pipeBottom.style.left = '800px';
+
+        setTimeout(createPipes, PIPE_INTERVAL * (Math.random() * 0.7 + 0.8)); // Variable interval
+    }
+
+    function checkCollision(pipes) {
+        const playerRect = player.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+
+        // Adjusting coordinates relative to the game-container for accuracy
+        const pxLeft = playerRect.left - containerRect.left;
+        const pxRight = playerRect.right - containerRect.left;
+        const pyTop = playerRect.top - containerRect.top;
+        const pyBottom = playerRect.bottom - containerRect.top;
+
+        for (let pipe of pipes) {
+            if (!pipe.parentNode) continue; // Skip if already removed
+
+            const pRect = pipe.getBoundingClientRect();
+            const pLLeft = pRect.left - containerRect.left;
+            const pRRight = pRect.right - containerRect.left;
+            const pTTop = pRect.top - containerRect.top;
+            const pBBottom = pRect.bottom - containerRect.top;
+
+            // Basic AABB collision check:
+            if (pxLeft < pRRight && pxRight > pLLeft) {
+                // Check vertical overlap
+                if ((pyTop < pTTop + 10 && pyBottom > pTTop) || (pyTop < pBBottom - 10 && pyBottom > pBBottom)) {
+                    gameOver();
+                    return;
+                }
+            }
+        }
+    }
+
+    function updateScore(pipes) {
+        let passed = false;
+        for (let pipe of pipes) {
+            const pipeLeft = parseFloat(pipe.style.left);
+            if (!isNaN(pipeLeft) && pipeLeft + 60 < player.offsetLeft + 5 && !pipe.dataset.scored) {
+                // Only check top pipes for scoring simplicity
+                if (pipe.classList.contains('pipe-top')) {
+                    score++;
+                    scoreDisplay.textContent = score;
+                    passed = true;
+                    // Mark both associated parts as scored (approximation needed due to pipe pair complexity)
+                    let partnerPipe = document.getElementById(`pipe-${Math.random()}`);
+                    if(partnerPipe) partnerPipe.dataset.scored = 'true';
+
+                } else if (pipe.classList.contains('pipe-bottom')) {
+                     // Fallback for scoring consistency
+                    passable = true;
+                }
+            }
+        }
+    }
+
+    function gameOver() {
+        if (!isPlaying) return;
+        clearInterval(gameLoop);
+        cancelAnimationFrame(gameLoop);
+        isPlaying = false;
+        finalScoreDisplay.textContent = `Your score: ${score}`;
+        gameOverScreen.style.display = 'flex';
+    }
+
+    function handleInput() {
+        if (isPlaying) {
+            jump();
+        }
+    }
+
+    // --- Event Listeners and Initialization ---
+
+    document.getElementById('start-button').addEventListener('click', () => {
+        startGame();
+        pipeTimer = setInterval(createPipes, PIPE_INTERVAL);
+        setInterval(() => { updateScore(container.querySelectorAll('.pipe')); }, 100); // Score check interval
+    });
+
+    document.addEventListener('mousedown', handleInput);
+    document.addEventListener('touchstart', handleInput);
+    document.addEventListener('keydown', e => {
+        if (e.key === ' ') {
+            handleInput();
+        }
+    });
+
+</script>
+</body>
+</html>

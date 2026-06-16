@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InkCode 2026</title>
+
+    <!-- Basic CSS for styling -->
+    <style>
+        /* -------------------- */
+        /* RESET & BASE STYLES */
+        /* -------------------- */
+        :root {
+            --ink-dark: #382a1c; /* Deep Charcoal/Ink Color */
+            --parchment-light: #f5efdc; /* Off-white, paper tone */
+            --link-hover: #6d4c3b; /* Slightly darker for hover state */
+            --font-serif: 'Georgia', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif; /* Fallback for body text */
+            background-color: var(--parchment-light);
+            color: var(--ink-dark);
+            line-height: 1.6;
+            padding: 2rem 0;
+        }
+
+        /* -------------------- */
+        /* LAYOUT CONTAINERS */
+        /* -------------------- */
+
+        .container {
+            max-width: 700px; /* Keeps text readable on large screens */
+            margin: 0 auto; /* Centers the content block */
+            padding: 2rem;
+            text-align: center;
+        }
+
+        /* Conference Header Styling */
+        header h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(2em, 5vw, 3.5em); /* Responsive font size handling */
+            margin-bottom: 0.5rem;
+            letter-spacing: 4px;
+            color: var(--ink-dark);
+        }
+
+        header p {
+            font-family: Georgia, serif;
+            font-style: italic;
+            color: #777;
+            margin-bottom: 3rem;
+        }
+
+
+        /* -------------------- */
+        /* LINK LIST STYLES */
+        /* -------------------- */
+
+        .link-list {
+            list-style: none; /* Remove default bullets */
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem; /* Space between list items */
+        }
+
+        /* Styling for the link wrappers (the list items) */
+        .link-list a {
+            font-size: clamp(1em, 3vw, 1.25em);
+            text-decoration: none; /* Remove underline */
+            display: block; /* Makes the entire area clickable */
+            padding: 0.8rem 1.5rem;
+            background-color: #fff; /* Slight card effect for definition */
+            border: 1px solid #ddd; /* Light border */
+            transition: background-color 0.2s, box-shadow 0.2s;
+        }
+
+        /* Hover effect for interaction feedback */
+        .link-list a:hover {
+            background-color: #eee;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); /* Subtle lift */
+            border-color: var(--link-hover);
+        }
+
+        /* Fallback for smaller screens (Ensuring padding doesn't look squashed) */
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem; /* Less padding on mobile view */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- Conference Header -->
+        <header>
+            <h1>InkCode 2026</h1>
+            <p>A Digital Humanities Showcase of Interactive Projects</p>
+        </header>
+
+        <!-- The list of links -->
+        <ul class="link-list">
+            <li>
+                <a href="./acrostic">Acrostic finder</a>
+            </li>
+            <li>
+                <a href="./arnth">Arnth's Lament</a>
+            </li>
+            <li>
+                <a href="./espresso">Italian Coffee Compass</a>
+            </li>
+        </ul>
+
+    </div>
+
+</body>
+</html>

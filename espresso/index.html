@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Italian Coffee Compass 🇮🇹</title>
+    <style>
+        /* Minimalist CSS */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9f7f3; /* Off-white background like aged paper */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            background-color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h1 {
+            font-size: 2em;
+            color: #8b4513; /* Coffee brown color */
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        #current-time {
+            font-size: 1.5em;
+            display: block;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h2 {
+            border-bottom: 2px solid #b8860e; /* Gold accent line */
+            padding-bottom: 10px;
+            color: #5d4037;
+        }
+
+        #recommendation {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #fffacd; /* Light cream background for results */
+            border-left: 5px solid #a0522d;
+        }
+
+        .coffee-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            background-color: #eee8e1;
+            transition: background-color 0.3s;
+        }
+
+        .coffee-item strong {
+            font-size: 1.1em;
+            color: #8b4513;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Icon for visual appeal */
+        span.icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🇮🇹 Italian Coffee Compass</h1>
+        <p>The perfect coffee order based on the time:</p>
+
+        <span id="current-time">Loading...</span>
+
+        <h2>☕ Your Recommendation</h2>
+
+        <div id="recommendation">
+            <p>Checking current time...</p>
+        </div>
+
+    </div>
+
+    <script>
+        // Function to get formatted current time
+        function getTimeString() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        // Main function to determine and display the recommendation
+        function updateCoffeeRecommendation() {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const recommendationDiv = document.getElementById('recommendation');
+
+            let htmlContent = '';
+            let timeWindowName = '';
+            let suggestions = [];
+
+            // --- 1. Morning (Colazione) ---
+            // Time range: Approx 7:00 AM to 12:00 PM
+            if (currentHour >= 7 && currentMinute >= 0 && currentHour < 12) {
+                timeWindowName = "☀️ Breakfast Time (Colazione)";
+                suggestions.push({
+                    name: "Cappuccino",
+                    details: "The classic pairing with a sweet pastry. Must be consumed before lunch!",
+                    icon: "🥛"
+                });
+                suggestions.push({
+                    name: "Caffelatte",
+                    details: "A milkier, softer blend for a gentler wake-up.",
+                    icon: "☕"
+                });
+            }
+            // --- 2. Mid-Day (After Lunch) ---
+            // Time range: Approx 12:00 PM to 2:30 PM
+            else if ((currentHour === 12 && currentMinute >= 0) || (currentHour >= 13 && currentHour < 15)) {
+                timeWindowName = "🍝 After Lunch Digestif";
+                suggestions.push({
+                    name: "Espresso",
+                    details: "The perfect, quick jolt to aid digestion after a rich meal.",
+                    icon: "🚀"
+                });
+                suggestions.push({
+                    name: "Caffè macchiato",
+                    details: "Espresso shot with a drop of milk.",
+                    icon: "⚫"
+                });
+            }
+            // --- 3. Afternoon Break (Pausa Caffè) ---
+            // Time range: Approx 3:00 PM to 5:00 PM
+            else if ((currentHour === 15 && currentMinute >= 0) || (currentHour < 17)) {
+                timeWindowName = "🌤️ Afternoon Break (Pausa Caffè)";
+                suggestions.push({
+                    name: "Espresso",
+                    details: "A quick, powerful shot of caffeine to restart the afternoon.",
+                    icon: "⚡"
+                });
+            }
+            // --- 4. Evening/Night (Digestivo) ---
+            // Time range: Approx 6:30 PM onwards
+            else if ((currentHour >= 18 && currentMinute >= 30)) {
+                timeWindowName = "🌙 Post-Dinner Digestif";
+                suggestions.push({
+                    name: "Espresso",
+                    details: "A strong, final shot to conclude your meal and aid digestion.",
+                    icon: "✨"
+                });
+            }
+            // --- Default/Catchall (Outside normal hours) ---
+            else {
+                timeWindowName = "⏰ Unknown Time / Outside Meal Hours";
+                suggestions.push({
+                    name: "Espresso",
+                    details: "In doubt, stick to the classic espresso shot. It's almost always correct!",
+                    icon: "👌"
+                });
+            }
+
+            // Build the HTML content based on suggestions
+            let resultHTML = `<strong>${timeWindowName}</strong><hr style="border-color:#e0b87d; margin: 10px 0;">`;
+
+            suggestions.forEach(coffee => {
+                resultHTML += `
+                    <div class="coffee-item">
+                        <span>${coffee.icon}</span>
+                        <strong>${coffee.name}</strong>
+                        <small>${coffee.details}</small>
+                    </div>
+                `;
+            });
+
+            recommendationDiv.innerHTML = resultHTML;
+        }
+
+        // 1. Set the time display to update every second (optional, but nice)
+        setInterval(() => {
+            document.getElementById('current-time').textContent = getTimeString();
+        }, 1000);
+
+
+        // 2. Run the recommendation logic immediately and then every 30 minutes
+        updateCoffeeRecommendation();
+        setInterval(updateCoffeeRecommendation, 30 * 60 * 1000); // Re-run check every half hour
+    </script>
+
+</body>
+</html>
