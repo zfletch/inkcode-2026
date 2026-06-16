@@ -110,10 +110,20 @@
             let timeWindowName = '';
             let suggestions = [];
 
+            // --- 0. Burning the midnight oil ---
+            // Time range: After midnight
+            if (currentHour < 6) {
+                timeWindowName = "🕛 Why are you awake?";
+                suggestions.push({
+                    name: "Espresso",
+                    details: "You should go to sleep. But if you can't, go with the classic espresso shot. E perché no?",
+                    icon: "🫩"
+                });
+            }
             // --- 1. Morning (Colazione) ---
-            // Time range: Approx 7:00 AM to 12:00 PM
-            if (currentHour >= 7 && currentMinute >= 0 && currentHour < 12) {
-                timeWindowName = "☀️ Breakfast Time (Colazione)";
+            // Time range: Approx 6:00 AM to 12:00 PM
+            else if (currentHour >= 6 && currentMinute >= 0 && currentHour < 12) {
+                timeWindowName = "☀️  Breakfast Time (Colazione)";
                 suggestions.push({
                     name: "Cappuccino",
                     details: "The classic pairing with a sweet pastry. Must be consumed before lunch!",
@@ -187,9 +197,7 @@
         }
 
         // 1. Set the time display to update every second (optional, but nice)
-        setInterval(() => {
-            document.getElementById('current-time').textContent = getTimeString();
-        }, 1000);
+        document.getElementById('current-time').textContent = getTimeString();
 
 
         // 2. Run the recommendation logic immediately and then every 30 minutes
