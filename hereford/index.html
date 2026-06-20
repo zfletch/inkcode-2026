@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Required for responsiveness on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hereford Map</title>
+    <style>
+        /* ---------------------- */
+        /* GLOBAL STYLES RESET AND BODY LAYOUT */
+        /* ---------------------- */
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%; /* Ensures body takes full viewport height */
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column; /* Stacks children (header and main) vertically */
+
+            background-color: #f9f9f9; /* Light background to visually separate it */
+        }
+
+        /* Container for the header elements (Title/Subtitle) */
+        .header {
+            padding: 40px 20px;
+            text-align: center;
+            flex-shrink: 0; /* Ensures the header keeps its fixed height */
+        }
+
+        /* Style for titles/headings */
+        h1 {
+            margin-top: 0;
+            font-size: 2.5em;
+            color: #333;
+        }
+
+        /* Subtitle/description style */
+        p.subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 0.5em;
+            margin-bottom: 0;
+        }
+
+
+        /* ---------------------- */
+        /* IMAGE STYLING (The key part) */
+        /* ---------------------- */
+
+        .image-container {
+            flex-grow: 1; /* Crucial: This tells the container to take up all remaining vertical space */
+            display: flex;
+            justify-content: center; /* Centers the image horizontally */
+            align-items: center;   /* Centers the image vertically (though usually redundant when using full height) */
+            overflow: hidden;      /* Hides any part of the image that might spill over */
+            margin: 15px;
+            margin-top: 0;
+
+            /* Fallback for centering if flex doesn't work perfectly */
+            text-align: center;
+        }
+
+        .large-image {
+            max-width: 100%; /* Ensures the image never exceeds the viewport width */
+            height: auto;   /* Crucial: Allows the browser to calculate the correct height based on the aspect ratio, preventing warping */
+            display: block;  /* Removes any potential inline spacing issues */
+            object-fit: contain; /* Optional fallback for modern CSS (less necessary with height: auto) */
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. HEADER AREA (Title and Subtitle - Editable) -->
+    <header class="header">
+        <h1>Hereford Georeferencing</h1>
+        <p class="subtitle">A georeferenced version of the ca. 1300 Hereford <i>Mappa Mundi</i>.</p>
+    </header>
+
+    <!-- 2. IMAGE CONTAINER (Fills Remaining Space) -->
+    <div class="image-container">
+        <!--
+            *** ACTION REQUIRED: Replace 'your-large-image.jpg' with the actual path to your photo ***
+            Using a dummy source for demonstration purposes.
+        -->
+        <img
+            src="./hereford-to-mercator-projection.png"
+            alt="Georeferenced Hereford Mappa Mundi"
+            class="large-image"
+            id="mainImage">
+    </div>
+
+</body>
+</html>
